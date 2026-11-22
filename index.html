@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love You Sifan ❤️</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: radial-gradient(circle at center, #251044, #080817 75%);
+    height: 100vh;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.container {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: 2s;
+    padding: 20px;
+}
+
+.container.show {
+    opacity: 1;
+    transform: scale(1);
+}
+
+h1 {
+    font-size: clamp(35px, 8vw, 75px);
+    color: #ff8fcf;
+    text-shadow:
+        0 0 10px #ff4fa3,
+        0 0 25px #ff4fa3,
+        0 0 50px #ff1493,
+        0 0 80px #ff1493;
+    animation: glow 2s infinite alternate;
+}
+
+.subtitle {
+    font-size: 20px;
+    margin-top: 20px;
+    color: #ffd6ed;
+    letter-spacing: 3px;
+}
+
+.heart {
+    font-size: 55px;
+    margin-bottom: 20px;
+    animation: heartbeat 1s infinite;
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px #ff4fa3;
+    }
+    to {
+        text-shadow:
+            0 0 20px #ff4fa3,
+            0 0 50px #ff1493,
+            0 0 90px #ff1493;
+    }
+}
+
+@keyframes heartbeat {
+    50% {
+        transform: scale(1.3);
+    }
+}
+
+.message {
+    margin-top: 30px;
+    font-size: 17px;
+    line-height: 1.8;
+    color: #ffe6f5;
+}
+
+.start-btn {
+    position: absolute;
+    z-index: 5;
+    padding: 16px 35px;
+    border: 2px solid white;
+    border-radius: 50px;
+    background: #ff4fa3;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 25px #ff4fa3;
+    transition: 0.3s;
+}
+
+.start-btn:hover {
+    transform: scale(1.1);
+    background: #ff1493;
+}
+
+.start-btn.hide {
+    display: none;
+}
+
+</style>
+</head>
+
+<body>
+
+<canvas id="fireworks"></canvas>
+
+<button class="start-btn" id="startBtn" onclick="startLove()">
+    Coba Tekan ❤️
+</button>
+
+<div class="container" id="content">
+
+    <div class="heart">💗</div>
+
+    <h1>LOVE YOU SIFAN</h1>
+
+    <div class="subtitle">
+        Harsifan Yunarsi
+    </div>
+
+    <div class="message"><h3>Kata Kata Ole Ayi..</h3>
+    
+        Di antara jutaan bintang di langit,<br>
+        Dena adalah cahaya yang paling indah. ❤️ 
+        walaupun di bekingannya Mama Sagori<br><br>
+
+        I don't need a perfect world,<br>
+        I just need you in my world  💕 !! ahayyyyyyyy masoooooooo, momoyo ku mana? :V
+    </div>
+
+</div>
+
+<audio id="music" loop>
+    <source src="Radiohead - No Surprises - (256 Kbps).mp3" type="audio/mpeg">
+</audio>
+
+<script>
+
+// MUSIK DAN TAMPILAN
+function startLove() {
+
+    const music = document.getElementById("music");
+    const content = document.getElementById("content");
+    const button = document.getElementById("startBtn");
+
+    button.classList.add("hide");
+
+    music.volume = 0.7;
+    music.play().catch(error => {
+        console.log("Musik gagal diputar:", error);
+    });
+
+    setTimeout(() => {
+        content.classList.add("show");
+    }, 1200);
+
+    launchFireworks();
+}
+
+
+// FIREWORKS ANIMATION
+const canvas = document.getElementById("fireworks");
+const ctx = canvas.getContext("6d");
+
+let width, height;
+
+function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+}
+
+resize();
+window.addEventListener("resize", resize);
+
+let particles = [];
+let rockets = [];
+
+class Particle {
+
+    constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 5 + 1;
+
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+
+        this.alpha = 1;
+        this.size = Math.random() * 3 + 1;
+    }
+
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        this.vy += 0.035;
+        this.vx *= 0.99;
+        this.vy *= 0.99;
+
+        this.alpha -= 0.012;
+    }
+
+    draw() {
+        ctx.globalAlpha = Math.max(this.alpha, 0);
+
+        ctx.beginPath();
+        ctx.arc(
+            this.x,
+            this.y,
+            this.size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = this.color;
+        ctx.fill();
+
+        ctx.globalAlpha = 1;
+        ctx.shadowBlur = 0;
+    }
+
+}
+
+function explode(x, y) {
+
+    const colors = [
+        "#ff4fa3",
+        "#ffffff",
+        "#ffd700",
+        "#00ffff",
+        "#b967ff",
+        "#ff5733"
+    ];
+
+    const color = colors[
+        Math.floor(Math.random() * colors.length)
+    ];
+
+    for (let i = 0; i < 100; i++) {
+        particles.push(
+            new Particle(x, y, color)
+        );
+    }
+
+}
+
+function randomFirework() {
+
+    const x = Math.random() * width;
+    const y = Math.random() * height * 0.65 + 30;
+
+    explode(x, y);
+
+}
+
+function animate() {
+
+    ctx.fillStyle = "rgba(8, 8, 23, 0.18)";
+    ctx.fillRect(0, 0, width, height);
+
+    particles.forEach((particle, index) => {
+
+        particle.update();
+        particle.draw();
+
+        if (particle.alpha <= 0) {
+            particles.splice(index, 1);
+        }
+
+    });
+
+    requestAnimationFrame(animate);
+
+}
+
+animate();
+
+
+// KEMBANG API BERULANG
+let fireworksStarted = false;
+
+function launchFireworks() {
+
+    if (fireworksStarted) return;
+
+    fireworksStarted = true;
+
+    randomFirework();
+
+    setInterval(() => {
+        randomFirework();
+    }, 900);
+
+}
+
+
+// BINTANG KECIL
+function createStars() {
+
+    for (let i = 0; i < 100; i++) {
+
+        const star = document.createElement("div");
+
+        star.style.position = "absolute";
+        star.style.width = "2px";
+        star.style.height = "2px";
+        star.style.background = "white";
+        star.style.borderRadius = "50%";
+
+        star.style.left = Math.random() * 100 + "%";
+        star.style.top = Math.random() * 100 + "%";
+
+        star.style.boxShadow = "0 0 8px white";
+
+        document.body.appendChild(star);
+
+    }
+
+}
+
+createStars();
+
+</script>
+
+</body>
+</html>
